@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  models: read
 
 jobs:
   generate-post:
@@ -18,11 +19,9 @@ jobs:
         with:
           node-version: 20
 
-      - run: npm install @anthropic-ai/sdk
-
       - run: node scripts/generate-post.mjs
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit and push
         run: |
