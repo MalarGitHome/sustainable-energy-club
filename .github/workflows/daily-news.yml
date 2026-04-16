@@ -1,0 +1,33 @@
+name: Daily News Post
+
+on:
+  schedule:
+    - cron: "0 16 * * *" # 16:00 UTC = 9:00 AM Pacific
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install @anthropic-ai/sdk
+
+      - run: node scripts/generate-post.mjs
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/posts.json
+          git commit -m "Add daily sustainable energy news post"
+          git push
